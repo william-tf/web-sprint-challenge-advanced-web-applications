@@ -13,7 +13,7 @@ const ColorList = ({ colors, updateColors }) => {
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
   const [id, setId] = useState('')
-  //const {push} = useHistory()
+  const history = useHistory()
 
   const editColor = color => {
     setEditing(true);
@@ -36,7 +36,7 @@ const ColorList = ({ colors, updateColors }) => {
       )
     })
     .catch(err => console.log('inside colorlist put catch:', err))
-    //push('/colors')
+    history.push('/colors')
   };
 
   const deleteColor = color => {
@@ -49,7 +49,7 @@ const ColorList = ({ colors, updateColors }) => {
       )
     })
     .catch(err => console.log('this is inside colorlist catch', err))
-    //push('/colors')
+    history.push('/colors')
   };
 
   return (
