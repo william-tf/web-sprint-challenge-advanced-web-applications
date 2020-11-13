@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import {useHistory} from 'react-router-dom'
+import {axiosWithAuth} from '../utils/axiosWithAuth'
 
 const initialColor = {
   color: "",
@@ -7,9 +9,11 @@ const initialColor = {
 };
 
 const ColorList = ({ colors, updateColors }) => {
-  console.log(colors);
+  // console.log(colors);
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
+  const [id, setId] = useState('')
+  const {push} = useHistory()
 
   const editColor = color => {
     setEditing(true);
@@ -18,13 +22,34 @@ const ColorList = ({ colors, updateColors }) => {
 
   const saveEdit = e => {
     e.preventDefault();
-    // Make a put request to save your updated color
-    // think about where will you get the id from...
-    // where is is saved right now?
+    axiosWithAuth().put(`/colors/${id}`, colorToEdit)
+    .then((res)=>{
+      console.log('this is in colorlist put:', res)
+      updateColors(
+        colors.map((color) =>{
+          if(color.id == Number(id)){
+            return res.data
+          }else{
+            return color
+          }
+        })
+      )
+    })
+    .catch(err => console.log('inside colorlist put catch:', err))
+    push('/colors')
   };
 
   const deleteColor = color => {
-    // make a delete request to delete this color
+    axiosWithAuth().delete(`/colors/${color.id}`)
+    .then(res => {
+      updateColors(
+        colors.filter((newColor) => {
+          return newColor.id !== id
+        })
+      )
+    })
+    .catch(err => console.log('this is inside colorlist catch', err))
+    push('/colors')
   };
 
   return (
@@ -32,7 +57,13 @@ const ColorList = ({ colors, updateColors }) => {
       <p>colors</p>
       <ul>
         {colors.map(color => (
-          <li key={color.color} onClick={() => editColor(color)}>
+          <li data-testid="color" key={color.color} onClick={() => {
+            editColor(color)
+            console.log(color.id)
+            setId(color.id)
+            
+            }}>
+            
             <span>
               <span className="delete" onClick={e => {
                     e.stopPropagation();
