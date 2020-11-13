@@ -2,9 +2,10 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import BubblePage from "./BubblePage";
 import { fetchColor as mockFetchColor } from "./testFetch";
-jest.mock("./testFetch");
+jest.mock("./testFetch.js");
 
-const colorData = [
+const colorData = {data: [
+  
   {
     color: "aliceblue",
     code: {
@@ -82,14 +83,14 @@ const colorData = [
     },
     id: 11,
   },
-];
+]}
 
 test("Fetches data and renders the bubbles", async () => {
   mockFetchColor.mockResolvedValueOnce(colorData);
 
-  render(<BubblePage />);
+  render(<BubblePage colorList={[]}/>);
 
-  await waitFor(() => {
+  waitFor(() => {
     const colors = screen.getAllByTestId("color");
     expect(colors).toHaveLength(11);
   });
